@@ -5,12 +5,9 @@ import datetime
 import sqlalchemy.orm as _orm
 import passlib
 
-import database, models, schemas
+import database, models, schemas, config
 
 oauth2schema = _security.OAuth2PasswordBearer(tokenUrl="/api/token")
-
-JWT_SECRET = "myjwtsecret"
-
 
 def create_database():
     return database.Base.metadata.create_all(bind=database.engine)
@@ -53,7 +50,7 @@ async def authenticate_user(username: str, password: str, db: _orm.Session):
 async def create_token(user: models.User):
     user_obj = schemas.User.from_orm(user)
 
-    token = jwt.encode(user_obj.dict(), JWT_SECRET)
+    token = jwt.encode(user_obj.dict(), config.jwt_secret)
 
     return dict(access_token=token, token_type="bearer")
 
@@ -63,7 +60,7 @@ async def get_current_user(
     token: str = fastapi.Depends(oauth2schema),
 ):
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(token, config.jwt_secret, config.jwt_algorithm)
         user = db.query(models.User).get(payload["id"])
     except:
         raise fastapi.HTTPException(

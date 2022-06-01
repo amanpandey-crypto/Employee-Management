@@ -1,0 +1,51 @@
+version: '3.8'
+services: 
+    docker-fastapi:
+        container_name: docker-fastapi
+        build: 
+            context: ./backend
+            dockerfile: Dockerfile
+        restart: always
+    nginx:
+        depends_on: 
+            - docker-fastapi
+        container_name: proxy-app
+        build: 
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports: 
+            - "80:80"
+        restart: always
+
+# version: "3.8"
+
+# services:
+#   postgres:
+#     image: "postgres"
+#     environment:
+#       - POSTGRES_PASSWORD=password1
+#   nginx:
+#     depends_on:
+#       - client
+#     restart: always
+#     build:
+#       dockerfile: Dockerfile
+#       context: ./nginx
+#     ports:
+#       - "3050:80"
+#   api:
+#     build:
+#       dockerfile: Dockerfile
+#       context: "./backend"
+#     # ports:
+#     #   - "8000:8000"
+
+#   client:
+#     stdin_open: true
+#     environment:
+#       - CHOKIDAR_USEPOLLING=true
+#     build:
+#       dockerfile: Dockerfile
+#       context: ./frontend
+#     # ports:
+#     #   - "3000:3000"

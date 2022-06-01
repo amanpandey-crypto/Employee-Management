@@ -1,12 +1,21 @@
 from typing import List
 import fastapi
 import fastapi.security as security
+from fastapi.middleware.cors import CORSMiddleware
 import sqlalchemy.orm as orm
+import uvicorn
 
 import services, schemas
 
 app = fastapi.FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/api/signup")
 async def create_user(
@@ -88,3 +97,6 @@ async def update_employee(
 @app.get("/api")
 async def root():
     return {"message": "Employee Management Portal"}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", port=8000, reload=True)
